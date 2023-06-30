@@ -8,7 +8,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +23,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -31,9 +38,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +51,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.imagesliderbycomposepager.ui.theme.ImageSliderByComposePagerTheme
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -63,6 +73,37 @@ fun HomeScreen() {
             .padding(vertical = 32.dp)
             .fillMaxSize(),
     ) {
+
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(all = 20.dp),
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    Modifier.
+                    tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                )
+            }
+        ) {
+            images.forEachIndexed { index, string ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                }) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(vertical = 12.dp, horizontal = 8.dp),
+                    ){
+                        Text(text ="Tab $index", style = if (pagerState.currentPage == index) MaterialTheme.typography.titleLarge else MaterialTheme.typography.labelMedium)
+                    }
+                }
+            }
+        }
         HorizontalPager(
             modifier = Modifier.align(Alignment.Center),
             pageCount = images.size,
@@ -104,7 +145,7 @@ fun HomeScreen() {
                 .fillMaxWidth(0.5f)
                 .clip(RoundedCornerShape(100))
                 .align(Alignment.BottomCenter)
-                .background(MaterialTheme.colorScheme.onBackground)
+                .background(Color.LightGray)
                 .padding(8.dp),
         ) {
             IconButton(
@@ -145,6 +186,7 @@ fun HomeScreen() {
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
