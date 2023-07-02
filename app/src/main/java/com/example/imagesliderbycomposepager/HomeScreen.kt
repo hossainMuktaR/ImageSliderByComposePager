@@ -107,7 +107,8 @@ fun HomeScreen() {
         HorizontalPager(
             modifier = Modifier.align(Alignment.Center),
             pageCount = images.size,
-            state = pagerState
+            state = pagerState,
+            pageSpacing = (-130).dp,
         ) { index ->
             val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
             val imageSizebyScale by animateFloatAsState(
